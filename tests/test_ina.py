@@ -5,7 +5,7 @@ def test_login(driver):
     sauce_page.go_to("https://www.saucedemo.com")
     sauce_page.login("standard_user", "secret_sauce")
     assert sauce_page.get_text() == "PRODUCTS"
-    sauce_page.artikli()
+    sauce_page.articles()
     
   
 
