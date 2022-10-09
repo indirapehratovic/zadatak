@@ -3,52 +3,56 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import time
 
-class SaucePage:
+class SauceDemo:
     def __init__(self, driver):
         self.driver = driver
         self.wait = WebDriverWait(driver, timeout=60)
     
-    def go_to(self, url):
-        self.driver.get(url)
+    def open(self):
+        self.driver.get("https://www.saucedemo.com")
         self.driver.maximize_window()
     
-    def login(self, username, password):
+    def login_page(self):
         username_field = self.wait.until(EC.element_to_be_clickable((By.ID, "user-name")))
         username_field.clear()
         username_field.click()
-        username_field.send_keys(username)
+        username_field.send_keys("standard_user")
         password_field = self.wait.until(EC.element_to_be_clickable((By.ID, "password")))
         password_field.clear()
         password_field.click()
-        password_field.send_keys(password)
+        password_field.send_keys("secret_sauce")
         login_button = self.driver.find_element(By.ID, "login-button")
         login_button.click()
 
-    
+    def assert_title(self, expected_title):
+        header_title = self.wait.until(EC.visibility_of_element_located((By.XPATH, "//*[@id='header_container']/div[2]/span")))
+        assert header_title.text == expected_title
 
-    def articles(self):
+    def assert_cart_items(self, items):
+        assert len(items) == 2
+        assert items[0].text == "Sauce Labs Onesie"
+        assert items[1].text == "Sauce Labs Bike Light"
+
+
+    def articles_page(self):
+        self.assert_title("PRODUCTS")
         add_article1_button = self.wait.until(EC.element_to_be_clickable((By.ID, "add-to-cart-sauce-labs-onesie")))
         add_article1_button.click()
         add_article2_button = self.wait.until(EC.element_to_be_clickable((By.ID, "add-to-cart-sauce-labs-bike-light")))
         add_article2_button.click()
         basket_icon = self.wait.until(EC.element_to_be_clickable((By.XPATH, "//*[@id='shopping_cart_container']/a")))
         basket_icon.click()
-        basket_title = self.wait.until(EC.visibility_of_element_located((By.XPATH, "//*[@id='header_container']/div[2]/span")))
-        print(basket_title.text)
-        assert basket_title.text == "YOUR CART"
-        time.sleep(1) #provjeriti dok se ne ucita stranica
+
+
+    def basket_page(self):
+        self.assert_title("YOUR CART")
         basket_content = self.driver.find_elements(By.CLASS_NAME, "inventory_item_name")
-        #print(sadrzaj_kosare[0].text)
-        #print(sadrzaj_kosare[1].text)
-        assert len(basket_content) == 2
-        assert basket_content[0].text == "Sauce Labs Onesie"
-        assert basket_content[1].text == "Sauce Labs Bike Light"
+        self.assert_cart_items(basket_content)
         checkout_button = self.driver.find_element(By.ID, "checkout")
-        print(checkout_button.text)
         checkout_button.click()
-        checkout_information_title = self.wait.until(EC.visibility_of_element_located((By.XPATH, "//*[@id='header_container']/div[2]/span")))
-        print(checkout_information_title.text)
-        assert checkout_information_title.text == "CHECKOUT: YOUR INFORMATION"
+
+    def checkout_information_page(self):  
+        self.assert_title("CHECKOUT: YOUR INFORMATION")
         firstname_field = self.wait.until(EC.element_to_be_clickable((By.ID, "first-name")))
         firstname_field.clear()
         firstname_field.click()
@@ -61,42 +65,26 @@ class SaucePage:
         postalcode_field.clear()
         postalcode_field.click()
         postalcode_field.send_keys("71000")
-        time.sleep(1)
         continue_button = self.driver.find_element(By.ID, "continue")
         continue_button.click()
-        time.sleep(1)
-        overview_title = self.wait.until(EC.visibility_of_element_located((By.XPATH, "//*[@id='header_container']/div[2]/span")))
-        print(overview_title.text)
-        assert overview_title.text == "CHECKOUT: OVERVIEW"
+
+    def overview_page(self):
+        self.assert_title("CHECKOUT: OVERVIEW")
         inventory_items = self.driver.find_elements(By.CLASS_NAME, "inventory_item_name")
-        print(inventory_items[0].text)
-        print(inventory_items[1].text)
-        assert len(inventory_items) == 2
-        assert inventory_items[0].text == "Sauce Labs Onesie"
-        assert inventory_items[1].text == "Sauce Labs Bike Light"
-        time.sleep(1)
+        self.assert_cart_items(inventory_items) 
         finish_button = self.driver.find_element(By.ID, "finish")
         finish_button.click()
-        checkout_complete_title = self.wait.until(EC.visibility_of_element_located((By.XPATH, "//*[@id='header_container']/div[2]/span")))
-        print(checkout_complete_title.text)
-        assert checkout_complete_title.text == "CHECKOUT: COMPLETE!"
-        time.sleep(1)
+
+    def logout_page(self):
+        self.assert_title("CHECKOUT: COMPLETE!")
         menu_icon = self.driver.find_element(By.ID, "react-burger-menu-btn")
         menu_icon.click()
-        time.sleep(1)
         logout_link = self.wait.until(EC.visibility_of_element_located ((By.ID,"logout_sidebar_link")))
         logout_link.click()
-        time.sleep(1)
         self.wait.until(EC.visibility_of_element_located((By.ID, "login-button")))
         
 
-    def get_text(self):
-        products_element = self.wait.until(EC.visibility_of_element_located((By.XPATH, "//*[@id='header_container']/div[2]/span")))
-        return products_element.text
+    
    
      
     
-    
-    #def get_alert_text(self):
-        #alert_prozor = self.wait.until(EC.alert_is_present())
-        #return alert_prozor.text

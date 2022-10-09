@@ -1,16 +1,12 @@
-from pages.sauce_page import SaucePage
+from pages.sauce_demo import SauceDemo
 
 def test_login(driver):
-    sauce_page = SaucePage(driver)
-    sauce_page.go_to("https://www.saucedemo.com")
-    sauce_page.login("standard_user", "secret_sauce")
-    assert sauce_page.get_text() == "PRODUCTS"
-    sauce_page.articles()
-    
+    sauce_demo = SauceDemo(driver)
+    sauce_demo.open()
+    sauce_demo.login_page()
+    sauce_demo.articles_page()
+    sauce_demo.basket_page()
+    sauce_demo.checkout_information_page()
+    sauce_demo.overview_page()
+    sauce_demo.logout_page()
   
-
-#def test_incorrect_login(driver):
-    #home_page = HomePage(driver)
-    #home_page.go_to("https://www.demoblaze.com")
-    #home_page.login("admin_ahmet", "admin")
-    #assert home_page.get_alert_text() == "User does not exist"
